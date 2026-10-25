@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <main>
+    <h1>Hola, {{ auth.perfil()?.nombre ?? auth.user()?.email }}</h1>
+    <p>
+      Has entrado como
+      <ion-badge [color]="auth.isAdmin() ? 'tertiary' : 'medium'">
+        {{ auth.isAdmin() ? 'Administrador' : 'Usuario estándar' }}
+      </ion-badge>
+    </p>
+
+    @if (cargando()) {
+      <div class="centro"><ion-spinner aria-label="Cargando resumen"></ion-spinner></div>
+    } @else {
+      <!-- Grid responsive: 1 columna en móvil, 3 en tablet/escritorio -->
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-subtitle>Productos</ion-card-subtitle>
+                <ion-card-title>{{ totalProductos() }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-subtitle>Con stock bajo</ion-card-subtitle>
+                <ion-card-title class="aviso">{{ stockBajo() }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-subtitle>Valor del inventario</ion-card-subtitle>
+                <ion-card-title>{{ valorInventario() | currency: 'EUR' }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-button routerLink="/productos">Ver productos</ion-button>
+      @if (auth.isAdmin()) {
+        <ion-button routerLink="/dashboard" fill="outline">Cuadro de mando</ion-button>
+      }
+    }
+  </main>
+</ion-content>
