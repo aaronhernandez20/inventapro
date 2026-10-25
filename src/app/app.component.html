@@ -1,3 +1,53 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-split-pane contentId="main-content" when="lg">
+    <!-- MENÚ LATERAL (solo con sesión iniciada) -->
+    <ion-menu contentId="main-content" type="overlay" [disabled]="!auth.isLoggedIn()">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>NexoStock</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <nav aria-label="Menú principal">
+          <ion-list lines="none">
+            @if (auth.perfil(); as perfil) {
+              <ion-item lines="full" class="usuario">
+                <ion-label>
+                  <h2>{{ perfil.nombre ?? perfil.email }}</h2>
+                  <ion-note>{{ perfil.rol === 'admin' ? 'Administrador' : 'Usuario estándar' }}</ion-note>
+                </ion-label>
+              </ion-item>
+            }
+
+            @for (op of menu(); track op.url) {
+              <ion-menu-toggle [autoHide]="false">
+                <ion-item
+                  button
+                  [routerLink]="op.url"
+                  routerLinkActive="seleccionado"
+                  routerDirection="root"
+                  detail="false">
+                  <ion-icon slot="start" [name]="op.icono" aria-hidden="true"></ion-icon>
+                  <ion-label>{{ op.titulo }}</ion-label>
+                </ion-item>
+              </ion-menu-toggle>
+            }
+          </ion-list>
+        </nav>
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-button expand="block" fill="clear" color="danger" (click)="salir()">
+            <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+            Cerrar sesión
+          </ion-button>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-menu>
+
+    <!-- AQUÍ SE CARGAN LAS PÁGINAS (lazy loading) -->
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
 </ion-app>

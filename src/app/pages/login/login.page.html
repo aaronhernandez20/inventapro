@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>NexoStock</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <main class="login">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title><h1>Iniciar sesión</h1></ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+          <ion-input
+            label="Email"
+            labelPlacement="stacked"
+            fill="outline"
+            type="email"
+            autocomplete="email"
+            formControlName="email"
+            errorText="Introduce un email válido">
+          </ion-input>
+
+          <ion-input
+            label="Contraseña"
+            labelPlacement="stacked"
+            fill="outline"
+            type="password"
+            autocomplete="current-password"
+            formControlName="password"
+            errorText="Mínimo 6 caracteres">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+
+          @if (error()) {
+            <ion-text color="danger">
+              <p role="alert">{{ error() }}</p>
+            </ion-text>
+          }
+
+          <ion-button type="submit" expand="block" [disabled]="cargando()">
+            @if (cargando()) {
+              <ion-spinner name="crescent" aria-label="Entrando"></ion-spinner>
+            } @else {
+              Entrar
+            }
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </main>
+</ion-content>
