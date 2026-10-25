@@ -1,0 +1,7 @@
+{
+  "name": "nexostock",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
