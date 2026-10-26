@@ -1,5 +1,5 @@
 /**
- * Modelos de datos de NexoStock (capa "Model" de la arquitectura MVVM).
+ * Modelos de datos de InventaPro (capa "Model" de la arquitectura MVVM).
  * Reflejan las tablas de Supabase.
  */
 

@@ -1,4 +1,4 @@
-# NexoStock
+# InventaPro
 
 Aplicación de gestión de inventario (PWA / híbrida) desarrollada con **Ionic + Angular (standalone)** y **Supabase**.
 Proyecto individual del módulo Desarrollo de Interfaces (DAM2) – Aarón Hernández Moreno.
@@ -28,7 +28,7 @@ Configura `src/environments/environment.ts` y `environment.prod.ts` con la URL y
 ## Credenciales de prueba
 | Rol | Email | Contraseña |
 |---|---|---|
-| Administrador | admin@nexostock.com | *(ver PDF de entrega)* |
-| Usuario estándar | user@nexostock.com | *(ver PDF de entrega)* |
+| Administrador | admin@inventapro.com | *(ver PDF de entrega)* |
+| Usuario estándar | user@inventapro.com | *(ver PDF de entrega)* |
 
 > Todos los datos de la aplicación son ficticios.
