@@ -23,6 +23,12 @@
         <ion-button fill="outline" (click)="cargar()" aria-label="Recargar productos">
           <ion-icon slot="icon-only" name="refresh-outline" aria-hidden="true"></ion-icon>
         </ion-button>
+        <ion-button fill="outline" (click)="exportarCsv()" [disabled]="cargando()">
+          <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon> CSV
+        </ion-button>
+        <ion-button fill="outline" (click)="exportarPdf()" [disabled]="cargando()">
+          <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> PDF
+        </ion-button>
         @if (auth.isAdmin()) {
           <ion-button routerLink="/productos/nuevo">
             <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>

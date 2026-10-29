@@ -6,10 +6,11 @@ import {
   IonRefresher, IonRefresherContent
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, alertCircleOutline, refreshOutline } from 'ionicons/icons';
+import { addOutline, alertCircleOutline, refreshOutline, downloadOutline, documentTextOutline } from 'ionicons/icons';
 import { ProductosService } from '../../services/productos.service';
 import { AuthService } from '../../services/auth.service';
 import { NotifyService } from '../../services/notify.service';
+import { ExportService, Informe } from '../../services/export.service';
 import { Categoria, Producto } from '../../models/models';
 import { Columna, DataTableComponent } from '../../shared/components/data-table/data-table.component';
 
@@ -33,6 +34,7 @@ export class ProductosPage {
   private alert = inject(AlertController);
   private router = inject(Router);
   protected auth = inject(AuthService);
+  private exportar = inject(ExportService);
 
   readonly productos = signal<FilaProducto[]>([]);
   readonly categorias = signal<Categoria[]>([]);
@@ -74,7 +76,7 @@ export class ProductosPage {
   ];
 
   constructor() {
-    addIcons({ addOutline, alertCircleOutline, refreshOutline });
+    addIcons({ addOutline, alertCircleOutline, refreshOutline, downloadOutline, documentTextOutline });
     this.cargar();
   }
 
@@ -126,5 +128,39 @@ export class ProductosPage {
     } catch {
       await this.notify.error('No se ha podido eliminar el producto');
     }
+  }
+
+  /** Informe con los productos que se ven ahora (respeta los filtros). */
+  private informe(): Informe<FilaProducto> {
+    const euros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+    const filas = this.filtrados();
+    return {
+      archivo: `inventapro-productos-${new Date().toISOString().slice(0, 10)}`,
+      titulo: 'Listado de productos',
+      subtitulo: `${filas.length} productos · ${this.vista() === 'bajo' ? 'solo stock bajo' : 'todos'}`,
+      indicadores: [
+        { etiqueta: 'Productos', valor: String(filas.length) },
+        { etiqueta: 'Unidades', valor: String(filas.reduce((t, p) => t + p.stock, 0)) },
+        { etiqueta: 'Valor', valor: euros.format(filas.reduce((t, p) => t + p.precio * p.stock, 0)) },
+      ],
+      columnas: [
+        { titulo: 'SKU', valor: (p) => p.sku },
+        { titulo: 'Producto', valor: (p) => p.nombre },
+        { titulo: 'Categoría', valor: (p) => p.categoria },
+        { titulo: 'Proveedor', valor: (p) => p.proveedor },
+        { titulo: 'Precio', valor: (p) => euros.format(p.precio), alinear: 'right' },
+        { titulo: 'Stock', valor: (p) => p.stock, alinear: 'right' },
+        { titulo: 'Mínimo', valor: (p) => p.stock_minimo, alinear: 'right' },
+      ],
+      filas,
+    };
+  }
+
+  exportarCsv(): void {
+    this.exportar.csv(this.informe());
+  }
+
+  async exportarPdf(): Promise<void> {
+    await this.exportar.pdf(this.informe());
   }
 }
