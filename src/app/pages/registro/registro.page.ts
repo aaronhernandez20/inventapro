@@ -12,6 +12,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { NotifyService } from '../../services/notify.service';
+import { ActividadService } from '../../services/actividad.service';
 import { LogoComponent } from '../../shared/components/logo/logo.component';
 import {
   camposIgualesValidator, existeEnServidorValidator, nivelPassword, passwordSeguraValidator
@@ -37,6 +38,7 @@ export class RegistroPage {
   private auth = inject(AuthService);
   private router = inject(Router);
   private notify = inject(NotifyService);
+  private actividad = inject(ActividadService);
   private fb = inject(FormBuilder);
 
   readonly enviando = signal(false);
@@ -108,6 +110,7 @@ export class RegistroPage {
       const { nombre, email, password } = this.form.getRawValue();
       const r = await this.auth.registrar(nombre.trim(), email.trim().toLowerCase(), password);
       if (r.sesionIniciada) {
+        await this.actividad.registrar({ tipo: 'usuario', nivel: 'ok', mensaje: `Nueva cuenta creada: ${nombre.trim()}` });
         await this.notify.ok(`¡Bienvenido, ${nombre.trim()}! Tu cuenta se ha creado.`);
         await this.router.navigateByUrl('/inicio', { replaceUrl: true });
       } else {

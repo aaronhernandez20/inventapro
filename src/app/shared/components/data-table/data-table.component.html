@@ -76,12 +76,14 @@
               }
               @if (acciones()) {
                 <td class="dt-actions">
-                  <ion-button fill="clear" size="small" (click)="editar.emit(fila)" [attr.aria-label]="'Editar ' + texto(fila, columnas()[1] ?? columnas()[0])">
+                  <ion-button fill="clear" size="small" (click)="editar.emit(fila)" [attr.aria-label]="textoEditar() + ' ' + texto(fila, columnas()[1] ?? columnas()[0])">
                     <ion-icon slot="icon-only" name="create-outline" aria-hidden="true"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" size="small" color="danger" (click)="eliminar.emit(fila)" [attr.aria-label]="'Eliminar ' + texto(fila, columnas()[1] ?? columnas()[0])">
-                    <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
-                  </ion-button>
+                  @if (eliminable()) {
+                    <ion-button fill="clear" size="small" color="danger" (click)="eliminar.emit(fila)" [attr.aria-label]="'Eliminar ' + texto(fila, columnas()[1] ?? columnas()[0])">
+                      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  }
                 </td>
               }
             </tr>

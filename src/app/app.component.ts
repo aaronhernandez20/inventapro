@@ -43,7 +43,9 @@ export class AppComponent {
   private readonly opciones: OpcionMenu[] = [
     { titulo: 'Inicio',          url: '/inicio',    icono: 'home-outline',        seccion: 'General',        soloAdmin: false },
     { titulo: 'Productos',       url: '/productos', icono: 'cube-outline',        seccion: 'General',        soloAdmin: false },
+    { titulo: 'Movimientos',     url: '/movimientos', icono: 'swap-horizontal-outline', seccion: 'General',   soloAdmin: false },
     { titulo: 'Cuadro de mando', url: '/dashboard', icono: 'pie-chart-outline',   seccion: 'Administración', soloAdmin: true },
+    { titulo: 'Usuarios',        url: '/usuarios',  icono: 'people-outline',      seccion: 'Administración', soloAdmin: true },
     { titulo: 'Ayuda',           url: '/ayuda',     icono: 'help-circle-outline', seccion: 'Soporte',        soloAdmin: false },
   ];
 

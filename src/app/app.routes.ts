@@ -37,6 +37,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/producto-form/producto-form.page').then((m) => m.ProductoFormPage),
   },
   {
+    path: 'movimientos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/movimientos/movimientos.page').then((m) => m.MovimientosPage),
+  },
+  {
+    path: 'usuarios',
+    canActivate: [adminGuard], // solo Administrador
+    loadComponent: () => import('./pages/usuarios/usuarios.page').then((m) => m.UsuariosPage),
+  },
+  {
     path: 'dashboard',
     canActivate: [adminGuard], // solo Administrador
     loadComponent: () => import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),

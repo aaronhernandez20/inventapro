@@ -62,4 +62,24 @@ export interface Movimiento {
   cantidad: number;
   usuario_id: string | null;
   created_at: string;
+  productos?: { nombre: string; sku: string; imagen_path: string | null } | null;
+  perfiles?: { nombre: string | null; email: string } | null;
+}
+
+/** Perfil con fecha de alta (listado de usuarios para el administrador). */
+export interface PerfilListado extends Perfil {
+  created_at: string;
+}
+
+/**
+ * Evento del registro de actividad (documento de la colección `actividad`
+ * en Firebase Firestore, la base de datos NoSQL en tiempo real).
+ */
+export interface Actividad {
+  id: string;
+  tipo: 'producto' | 'movimiento' | 'alerta' | 'usuario';
+  mensaje: string;
+  usuario: string;
+  nivel: 'info' | 'ok' | 'aviso';
+  fecha: Date | null;
 }
