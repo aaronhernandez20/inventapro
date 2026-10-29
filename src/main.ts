@@ -1,4 +1,6 @@
+import { isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideServiceWorker } from '@angular/service-worker';
 import { RouteReuseStrategy, provideRouter, withComponentInputBinding, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -14,5 +16,10 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     // HttpClient con el interceptor que añade el token JWT de Supabase
     provideHttpClient(withFetch(), withInterceptors([supabaseInterceptor])),
+    // PWA: service worker (solo en producción) para instalar la app y cachear recursos
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 });

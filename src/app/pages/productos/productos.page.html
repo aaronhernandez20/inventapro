@@ -4,6 +4,11 @@
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Productos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'productos' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -12,8 +17,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <main class="page" id="contenido">
-    <header class="page-header">
+  <div class="page" id="contenido">
+    <div class="page-header">
       <div>
         <span class="eyebrow">Inventario</span>
         <h1>Productos</h1>
@@ -36,7 +41,7 @@
           </ion-button>
         }
       </div>
-    </header>
+    </div>
 
     @if (error()) {
       <div class="surface empty-state" role="alert">
@@ -77,5 +82,5 @@
         </app-data-table>
       </section>
     }
-  </main>
+  </div>
 </ion-content>

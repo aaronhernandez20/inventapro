@@ -8,16 +8,48 @@
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
-    <h1>Manual de usuario</h1>
-    <h2>¿Qué es InventaPro?</h2>
-    <p>Aplicación para gestionar el inventario de una empresa: productos, categorías, proveedores y movimientos de stock.</p>
-    <h2>Roles</h2>
-    <ul>
-      <li><strong>Administrador:</strong> gestiona productos, ve el cuadro de mando y exporta informes.</li>
-      <li><strong>Usuario estándar:</strong> consulta el inventario y registra entradas y salidas.</li>
-    </ul>
-    <h2>Navegación</h2>
-    <p>Usa el menú lateral (botón ☰ en móvil) para moverte entre secciones. Todo se puede usar con el teclado (tecla Tab).</p>
-  </main>
+  <div class="page page-narrow" id="contenido">
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Manual de usuario</span>
+        <h1>¿Cómo funciona InventaPro?</h1>
+        <p class="subtitle">
+          Guía de uso de cada sección. Estás viendo la ayuda para el rol
+          <strong>{{ auth.isAdmin() ? 'Administrador' : 'Usuario estándar' }}</strong>.
+        </p>
+      </div>
+    </div>
+
+    <section class="surface help-intro">
+      <ion-icon name="help-buoy-outline" aria-hidden="true"></ion-icon>
+      <div>
+        <h2>Roles de la aplicación</h2>
+        <p><strong>Administrador:</strong> gestiona productos e imágenes, usuarios y roles, ve el cuadro de mando y exporta informes.</p>
+        <p><strong>Usuario estándar:</strong> consulta el inventario, registra entradas y salidas y descarga listados.</p>
+      </div>
+    </section>
+
+    <ion-accordion-group class="help-list" [value]="abierta()">
+      @for (s of secciones(); track s.id) {
+        <ion-accordion [value]="s.id">
+          <ion-item slot="header" lines="none">
+            <ion-icon slot="start" [name]="s.icono" aria-hidden="true"></ion-icon>
+            <ion-label><h2>{{ s.titulo }}</h2></ion-label>
+          </ion-item>
+          <div slot="content" class="help-content">
+            <ol>
+              @for (paso of s.pasos; track $index) {
+                <li>{{ paso }}</li>
+              }
+            </ol>
+          </div>
+        </ion-accordion>
+      }
+    </ion-accordion-group>
+
+    <p class="help-foot">
+      ¿Sigues con dudas? Vuelve al <a routerLink="/inicio">inicio</a> o consulta la
+      <a href="/docs/index.html" target="_blank" rel="noopener">documentación técnica</a> (se abre en otra pestaña).
+    </p>
+  </div>
 </ion-content>

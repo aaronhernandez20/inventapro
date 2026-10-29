@@ -8,8 +8,8 @@
 </ion-header>
 
 <ion-content>
-  <main class="page page-narrow" id="contenido">
-    <header class="page-header">
+  <div class="page page-narrow" id="contenido">
+    <div class="page-header">
       <div>
         <span class="eyebrow">Inventario</span>
         <h1>{{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}</h1>
@@ -17,7 +17,7 @@
           {{ esEdicion() ? 'Modifica los datos del producto. El stock se actualiza registrando movimientos.' : 'Añade un artículo al catálogo con su imagen y su stock inicial.' }}
         </p>
       </div>
-    </header>
+    </div>
 
     @if (cargando()) {
       <div class="center"><ion-spinner aria-label="Cargando formulario"></ion-spinner></div>
@@ -95,5 +95,5 @@
         </div>
       </form>
     }
-  </main>
+  </div>
 </ion-content>

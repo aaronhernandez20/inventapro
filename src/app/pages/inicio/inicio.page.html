@@ -4,11 +4,16 @@
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'inicio' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
+  <div class="page" id="contenido">
     <!-- Bienvenida -->
     <section class="hero-banner">
       <div>
@@ -108,5 +113,5 @@
         </div>
       </div>
     }
-  </main>
+  </div>
 </ion-content>

@@ -4,12 +4,17 @@
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Cuadro de mando</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'dashboard' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
-    <header class="page-header">
+  <div class="page" id="contenido">
+    <div class="page-header">
       <div>
         <span class="eyebrow">Administración</span>
         <h1>Cuadro de mando</h1>
@@ -23,7 +28,7 @@
           <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> Informe PDF
         </ion-button>
       </div>
-    </header>
+    </div>
 
     <!-- Filtros en tiempo real -->
     <section class="surface filtros-dashboard" aria-label="Filtros del cuadro de mando">
@@ -128,5 +133,5 @@
         }
       </section>
     }
-  </main>
+  </div>
 </ion-content>

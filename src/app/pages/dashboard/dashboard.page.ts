@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartData, ChartOptions, ScriptableContext } from 'chart.js';
 import {
@@ -33,6 +34,7 @@ const PALETA = ['#4f46e5', '#0f766e', '#d97706', '#e11d48', '#7c3aed', '#0284c7'
   templateUrl: 'dashboard.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     StatCardComponent, ChartComponent,
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon,
     IonSegment, IonSegmentButton, IonLabel, IonSelect, IonSelectOption, IonSkeletonText
