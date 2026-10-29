@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSpinner, IonButton, IonIcon
@@ -6,12 +8,14 @@ import {
 import { addIcons } from 'ionicons';
 import {
   cubeOutline, layersOutline, walletOutline, warningOutline, arrowForwardOutline,
-  addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline
+  addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline, swapHorizontalOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { ProductosService } from '../../services/productos.service';
 import { Producto } from '../../models/models';
 import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
+import { ActivityFeedComponent } from '../../shared/components/activity-feed/activity-feed.component';
+import { ActividadService } from '../../services/actividad.service';
 
 /** Página de inicio: saludo, indicadores del inventario y productos que necesitan reposición. */
 @Component({
@@ -19,7 +23,7 @@ import { StatCardComponent } from '../../shared/components/stat-card/stat-card.c
   templateUrl: 'inicio.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink, StatCardComponent,
+    RouterLink, StatCardComponent, ActivityFeedComponent,
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSpinner, IonButton, IonIcon
   ],
 })
@@ -27,6 +31,10 @@ export class InicioPage {
   protected auth = inject(AuthService);
   private productosService = inject(ProductosService);
   private router = inject(Router);
+  protected actividad = inject(ActividadService);
+
+  /** Últimos eventos en tiempo real (Firestore). */
+  readonly eventos = toSignal(this.actividad.escuchar(6).pipe(catchError(() => of([]))), { initialValue: null });
 
   readonly cargando = signal(true);
   readonly productos = signal<Producto[]>([]);
@@ -56,7 +64,7 @@ export class InicioPage {
   constructor() {
     addIcons({
       cubeOutline, layersOutline, walletOutline, warningOutline, arrowForwardOutline,
-      addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline,
+      addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline, swapHorizontalOutline,
     });
     this.cargar();
   }

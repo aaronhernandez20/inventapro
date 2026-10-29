@@ -82,10 +82,12 @@
           }
         </section>
 
+        <div class="stack">
         <!-- Accesos rápidos -->
         <section class="surface" aria-labelledby="titulo-accesos">
           <h2 id="titulo-accesos" class="surface-title">Accesos rápidos</h2>
           <nav class="quick-links" aria-label="Accesos rápidos">
+            <a routerLink="/movimientos"><ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon><span>Registrar entrada o salida</span></a>
             <a routerLink="/productos"><ion-icon name="cube-outline" aria-hidden="true"></ion-icon><span>Consultar inventario</span></a>
             @if (auth.isAdmin()) {
               <a routerLink="/productos/nuevo"><ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon><span>Dar de alta un producto</span></a>
@@ -94,6 +96,16 @@
             <a routerLink="/ayuda"><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon><span>Manual de usuario</span></a>
           </nav>
         </section>
+
+        <!-- Actividad en tiempo real (Firestore) -->
+        <section class="surface" aria-labelledby="titulo-actividad">
+          <div class="surface-head">
+            <h2 id="titulo-actividad">Actividad reciente</h2>
+            @if (actividad.disponible) { <span class="live-dot">En directo</span> }
+          </div>
+          <app-activity-feed [eventos]="eventos() ?? []" [cargando]="eventos() === null" [disponible]="actividad.disponible" />
+        </section>
+        </div>
       </div>
     }
   </main>

@@ -67,6 +67,17 @@ GRANT EXECUTE ON FUNCTION public.email_registrado(TEXT) TO anon, authenticated;
 
 
 -- ---------------------------------------------------------------------
+-- PARTE 3c: relación movimientos -> perfiles
+-- Permite mostrar en el historial el nombre de quién hizo cada movimiento
+-- (consulta: movimientos?select=*,perfiles(nombre)).
+-- ---------------------------------------------------------------------
+ALTER TABLE public.movimientos DROP CONSTRAINT IF EXISTS movimientos_usuario_perfil_fk;
+ALTER TABLE public.movimientos
+  ADD CONSTRAINT movimientos_usuario_perfil_fk
+  FOREIGN KEY (usuario_id) REFERENCES public.perfiles(id) ON DELETE SET NULL;
+
+
+-- ---------------------------------------------------------------------
 -- PARTE 4: imágenes y descripciones de los productos de prueba
 -- (las imágenes se suben al bucket con el nombre <SKU>.png)
 -- ---------------------------------------------------------------------

@@ -1,0 +1,96 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Movimientos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="page" id="contenido">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">Stock</span>
+        <h1>Movimientos</h1>
+        <p class="subtitle">Registra entradas y salidas de almacén. El stock se actualiza automáticamente.</p>
+      </div>
+    </header>
+
+    <div class="grid-main grid-main--reverse">
+      <!-- Historial -->
+      <section class="surface" aria-labelledby="titulo-historial">
+        <h2 id="titulo-historial" class="surface-title">Historial</h2>
+        <app-data-table
+          titulo="Historial de movimientos de stock"
+          placeholder="Buscar por producto, SKU o usuario…"
+          textoVacio="Todavía no hay movimientos."
+          [filas]="movimientos()"
+          [columnas]="columnas"
+          [cargando]="cargando()"
+          [porPagina]="10" />
+      </section>
+
+      <div class="stack">
+        <!-- Formulario -->
+        <section class="surface" aria-labelledby="titulo-registrar">
+          <h2 id="titulo-registrar" class="surface-title">Registrar movimiento</h2>
+          <form [formGroup]="form" (ngSubmit)="registrar()" class="stack-form" novalidate>
+            <ion-segment class="app-segment segment-full" formControlName="tipo" aria-label="Tipo de movimiento">
+              <ion-segment-button value="entrada">
+                <ion-icon name="arrow-down-circle-outline" aria-hidden="true"></ion-icon>
+                <ion-label>Entrada</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="salida">
+                <ion-icon name="arrow-up-circle-outline" aria-hidden="true"></ion-icon>
+                <ion-label>Salida</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+
+            <ion-select label="Producto" labelPlacement="floating" fill="outline" formControlName="producto_id"
+              interface="popover" errorText="Elige un producto">
+              @for (p of productos(); track p.id) {
+                <ion-select-option [value]="p.id">{{ p.nombre }} ({{ p.sku }})</ion-select-option>
+              }
+            </ion-select>
+
+            @if (seleccionado(); as p) {
+              <div class="producto-mini">
+                @if (p.imagen_url) { <img class="thumb" [src]="p.imagen_url" [alt]="p.nombre" width="44" height="44" /> }
+                <div>
+                  <p class="producto-mini-nombre">{{ p.nombre }}</p>
+                  <p class="producto-mini-stock">Stock actual: <strong>{{ p.stock }}</strong> · mínimo {{ p.stock_minimo }}</p>
+                </div>
+              </div>
+            }
+
+            <ion-input label="Cantidad (unidades)" labelPlacement="floating" fill="outline" type="number"
+              inputmode="numeric" min="1" formControlName="cantidad" errorText="Introduce una cantidad entre 1 y 10.000">
+            </ion-input>
+
+            @if (form.hasError('sinStock')) {
+              <p class="field-hint error" role="alert">La salida supera el stock disponible ({{ seleccionado()?.stock }} uds).</p>
+            }
+
+            <ion-button type="submit" expand="block" [disabled]="guardando()">
+              @if (guardando()) {
+                <ion-spinner name="crescent" aria-label="Registrando"></ion-spinner>
+              } @else {
+                <ion-icon slot="start" name="checkmark-outline" aria-hidden="true"></ion-icon> Registrar
+              }
+            </ion-button>
+          </form>
+        </section>
+
+        <!-- Actividad en tiempo real (Firestore) -->
+        <section class="surface" aria-labelledby="titulo-actividad">
+          <div class="surface-head">
+            <h2 id="titulo-actividad">Actividad</h2>
+            @if (actividad.disponible) { <span class="live-dot">En directo</span> }
+          </div>
+          <app-activity-feed [eventos]="eventos() ?? []" [cargando]="eventos() === null" [disponible]="actividad.disponible" />
+        </section>
+      </div>
+    </div>
+  </main>
+</ion-content>

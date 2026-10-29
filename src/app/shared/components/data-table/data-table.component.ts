@@ -54,6 +54,10 @@ export class DataTableComponent<T extends object> {
   readonly placeholder = input<string>('Buscar…');
   /** Muestra los botones Editar / Eliminar en cada fila. */
   readonly acciones = input<boolean>(false);
+  /** Permite ocultar el botón Eliminar (por ejemplo, si solo se puede editar). */
+  readonly eliminable = input<boolean>(true);
+  /** Texto del botón Editar (para lectores de pantalla). */
+  readonly textoEditar = input<string>('Editar');
   /** Muestra filas "esqueleto" mientras se cargan los datos. */
   readonly cargando = input<boolean>(false);
   /** Filas por página. */

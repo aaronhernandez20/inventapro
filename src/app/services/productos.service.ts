@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { StorageService } from './storage.service';
+import { ActividadService } from './actividad.service';
 import { Categoria, Producto, ProductoGuardar, Proveedor } from '../models/models';
 
 /**
@@ -11,6 +12,7 @@ import { Categoria, Producto, ProductoGuardar, Proveedor } from '../models/model
 export class ProductosService {
   private sb = inject(SupabaseService).client;
   private storage = inject(StorageService);
+  private actividad = inject(ActividadService);
 
   /** Añade la URL pública de la imagen a cada producto. */
   private conImagen = (p: Producto): Producto => ({ ...p, imagen_url: this.storage.urlPublica(p.imagen_path) });
@@ -40,6 +42,7 @@ export class ProductosService {
   async crear(producto: ProductoGuardar): Promise<Producto> {
     const { data, error } = await this.sb.from('productos').insert(producto).select().single();
     if (error) throw error;
+    await this.actividad.registrar({ tipo: 'producto', nivel: 'ok', mensaje: `Nuevo producto: ${producto.nombre} (${producto.sku})` });
     return data as Producto;
   }
 
@@ -47,6 +50,7 @@ export class ProductosService {
   async actualizar(id: number, cambios: Partial<ProductoGuardar>): Promise<void> {
     const { error } = await this.sb.from('productos').update(cambios).eq('id', id);
     if (error) throw error;
+    await this.actividad.registrar({ tipo: 'producto', nivel: 'info', mensaje: `Producto actualizado: ${cambios.nombre ?? '#' + id}` });
   }
 
   /** Elimina un producto y su imagen del bucket. */
@@ -54,6 +58,7 @@ export class ProductosService {
     const { error } = await this.sb.from('productos').delete().eq('id', producto.id);
     if (error) throw error;
     await this.storage.borrar(producto.imagen_path);
+    await this.actividad.registrar({ tipo: 'producto', nivel: 'aviso', mensaje: `Producto eliminado: ${producto.nombre}` });
   }
 
   /** Comprueba si ya existe un producto con ese SKU (validación asíncrona del formulario). */
