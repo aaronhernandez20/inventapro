@@ -1,20 +1,24 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle,
-  IonCardContent, IonInput, IonInputPasswordToggle, IonButton, IonSpinner, IonText
+  IonContent, IonInput, IonInputPasswordToggle, IonButton, IonSpinner, IonIcon, IonNote
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  cubeOutline, pulseOutline, shieldCheckmarkOutline, documentTextOutline, alertCircleOutline
+} from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
+import { LogoComponent } from '../../shared/components/logo/logo.component';
 
 /** Pantalla de inicio de sesión (formulario reactivo con validación). */
 @Component({
   selector: 'app-login',
   templateUrl: 'login.page.html',
-  styleUrls: ['login.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader,
-    IonCardTitle, IonCardContent, IonInput, IonInputPasswordToggle, IonButton, IonSpinner, IonText
+    ReactiveFormsModule, RouterLink, LogoComponent,
+    IonContent, IonInput, IonInputPasswordToggle, IonButton, IonSpinner, IonIcon, IonNote
   ],
 })
 export class LoginPage {
@@ -32,6 +36,10 @@ export class LoginPage {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  constructor() {
+    addIcons({ cubeOutline, pulseOutline, shieldCheckmarkOutline, documentTextOutline, alertCircleOutline });
+  }
+
   /** Envía el formulario: inicia sesión y entra a /inicio. */
   async entrar(): Promise<void> {
     if (this.form.invalid) {
@@ -42,7 +50,7 @@ export class LoginPage {
     this.error.set(null);
     try {
       const { email, password } = this.form.getRawValue();
-      await this.auth.login(email, password);
+      await this.auth.login(email.trim(), password);
       await this.router.navigateByUrl('/inicio', { replaceUrl: true });
     } catch {
       this.error.set('Email o contraseña incorrectos.');

@@ -1,0 +1,147 @@
+// =============================================================================
+// THEME / _LAYOUT.SCSS - estructura de las páginas (mobile-first)
+// =============================================================================
+@use 'theme/tokens' as t;
+
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2.5rem;
+
+  @include t.respond('md') {
+    padding: 1.75rem 2rem 3rem;
+  }
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  }
+
+  .subtitle {
+    margin: 0.35rem 0 0;
+    color: t.$muted;
+    font-size: 0.95rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ion-color-primary);
+}
+
+// Rejillas responsive
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: t.$gap;
+  margin-bottom: 1.5rem;
+}
+
+.grid-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @include t.respond('lg') {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @include t.respond('md') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.surface {
+  @include t.surface;
+
+  > h2:first-child,
+  .surface-title {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+}
+
+.surface-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: t.$muted;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: #94a3b8;
+  }
+
+  h3 {
+    margin: 0.5rem 0 0.25rem;
+    font-size: 1.05rem;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @include t.respond('md') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .full {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}

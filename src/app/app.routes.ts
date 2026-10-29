@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
   },
   {
+    path: 'registro',
+    canActivate: [invitadoGuard],
+    loadComponent: () => import('./pages/registro/registro.page').then((m) => m.RegistroPage),
+  },
+  {
     path: 'inicio',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/inicio/inicio.page').then((m) => m.InicioPage),

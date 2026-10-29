@@ -1,45 +1,47 @@
 <ion-app>
   <ion-split-pane contentId="main-content" when="lg">
     <!-- MENÚ LATERAL (solo con sesión iniciada) -->
-    <ion-menu contentId="main-content" type="overlay" [disabled]="!auth.isLoggedIn()">
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title>InventaPro</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
+    <ion-menu class="app-menu" contentId="main-content" type="overlay" [disabled]="!auth.isLoggedIn()">
       <ion-content>
-        <nav aria-label="Menú principal">
-          <ion-list lines="none">
-            @if (auth.perfil(); as perfil) {
-              <ion-item lines="full" class="usuario">
-                <ion-label>
-                  <h2>{{ perfil.nombre ?? perfil.email }}</h2>
-                  <ion-note>{{ perfil.rol === 'admin' ? 'Administrador' : 'Usuario estándar' }}</ion-note>
-                </ion-label>
-              </ion-item>
-            }
+        <app-logo tagline="Gestión de inventario" />
 
-            @for (op of menu(); track op.url) {
-              <ion-menu-toggle [autoHide]="false">
-                <ion-item
-                  button
-                  [routerLink]="op.url"
-                  routerLinkActive="seleccionado"
-                  routerDirection="root"
-                  detail="false">
-                  <ion-icon slot="start" [name]="op.icono" aria-hidden="true"></ion-icon>
-                  <ion-label>{{ op.titulo }}</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-            }
-          </ion-list>
+        @if (auth.isLoggedIn()) {
+          <div class="menu-user">
+            <span class="avatar" aria-hidden="true">{{ auth.iniciales() }}</span>
+            <div>
+              <p class="menu-user-name">{{ auth.nombreVisible() }}</p>
+              <p class="menu-user-role">{{ auth.isAdmin() ? 'Administrador' : 'Usuario estándar' }}</p>
+            </div>
+          </div>
+        }
+
+        <nav aria-label="Menú principal">
+          @for (seccion of secciones(); track seccion.nombre) {
+            <p class="menu-section" aria-hidden="true">{{ seccion.nombre }}</p>
+            <ion-list class="menu-list" lines="none">
+              @for (op of seccion.opciones; track op.url) {
+                <ion-menu-toggle [autoHide]="false">
+                  <ion-item
+                    button
+                    detail="false"
+                    [routerLink]="op.url"
+                    routerLinkActive="activo"
+                    #rla="routerLinkActive"
+                    [attr.aria-current]="rla.isActive ? 'page' : null"
+                    routerDirection="root">
+                    <ion-icon slot="start" [name]="op.icono" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ op.titulo }}</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+              }
+            </ion-list>
+          }
         </nav>
       </ion-content>
 
       <ion-footer>
         <ion-toolbar>
-          <ion-button expand="block" fill="clear" color="danger" (click)="salir()">
+          <ion-button class="menu-logout" fill="clear" (click)="salir()">
             <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
             Cerrar sesión
           </ion-button>
