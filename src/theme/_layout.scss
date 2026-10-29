@@ -145,3 +145,54 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+
+  ion-segment {
+    display: inline-flex !important;
+    width: fit-content !important;
+    max-width: 100%;
+    flex: 0 1 auto;
+  }
+
+  ion-segment-button {
+    flex: 0 0 auto;
+    min-width: 96px;
+    max-width: none;
+    width: auto;
+    padding: 0 0.5rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  ion-select {
+    flex: 0 0 auto;
+    width: 230px;
+    min-height: 44px;
+  }
+}
+
+.page-narrow {
+  max-width: 920px;
+}
+
+.form-section {
+  margin: 1.75rem 0 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.form-grid--3 {
+  @include t.respond('md') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.field-hint--below {
+  margin: 0.35rem 0 0 0.25rem;
+}

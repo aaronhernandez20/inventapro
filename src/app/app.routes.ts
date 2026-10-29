@@ -27,6 +27,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/productos/productos.page').then((m) => m.ProductosPage),
   },
   {
+    path: 'productos/nuevo',
+    canActivate: [adminGuard], // solo Administrador
+    loadComponent: () => import('./pages/producto-form/producto-form.page').then((m) => m.ProductoFormPage),
+  },
+  {
+    path: 'productos/:id/editar',
+    canActivate: [adminGuard], // solo Administrador
+    loadComponent: () => import('./pages/producto-form/producto-form.page').then((m) => m.ProductoFormPage),
+  },
+  {
     path: 'dashboard',
     canActivate: [adminGuard], // solo Administrador
     loadComponent: () => import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
