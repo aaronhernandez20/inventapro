@@ -7,12 +7,13 @@ import {
   IonSegment, IonSegmentButton, IonLabel, IonInput, IonButton, IonIcon, IonSpinner
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { arrowDownCircleOutline, arrowUpCircleOutline, checkmarkOutline } from 'ionicons/icons';
+import { arrowDownCircleOutline, arrowUpCircleOutline, checkmarkOutline, downloadOutline, documentTextOutline } from 'ionicons/icons';
 import { MovimientosService } from '../../services/movimientos.service';
 import { ProductosService } from '../../services/productos.service';
 import { StorageService } from '../../services/storage.service';
 import { ActividadService } from '../../services/actividad.service';
 import { NotifyService } from '../../services/notify.service';
+import { ExportService, Informe } from '../../services/export.service';
 import { Movimiento, Producto } from '../../models/models';
 import { Columna, DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { ActivityFeedComponent } from '../../shared/components/activity-feed/activity-feed.component';
@@ -40,6 +41,7 @@ export class MovimientosPage {
   private storage = inject(StorageService);
   private notify = inject(NotifyService);
   private fb = inject(FormBuilder);
+  private exportar = inject(ExportService);
   protected actividad = inject(ActividadService);
 
   readonly movimientos = signal<FilaMovimiento[]>([]);
@@ -78,7 +80,7 @@ export class MovimientosPage {
   ];
 
   constructor() {
-    addIcons({ arrowDownCircleOutline, arrowUpCircleOutline, checkmarkOutline });
+    addIcons({ arrowDownCircleOutline, arrowUpCircleOutline, checkmarkOutline, downloadOutline, documentTextOutline });
     this.cargar();
   }
 
@@ -133,5 +135,39 @@ export class MovimientosPage {
     } finally {
       this.guardando.set(false);
     }
+  }
+
+  /** Informe del historial de movimientos. */
+  private informe(): Informe<FilaMovimiento> {
+    const fecha = new Intl.DateTimeFormat('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+    const filas = this.movimientos();
+    const total = (t: string) => filas.filter((m) => m.tipo === t).reduce((s, m) => s + m.cantidad, 0);
+    return {
+      archivo: `inventapro-movimientos-${new Date().toISOString().slice(0, 10)}`,
+      titulo: 'Historial de movimientos',
+      subtitulo: `${filas.length} movimientos`,
+      indicadores: [
+        { etiqueta: 'Movimientos', valor: String(filas.length) },
+        { etiqueta: 'Unidades de entrada', valor: String(total('entrada')) },
+        { etiqueta: 'Unidades de salida', valor: String(total('salida')) },
+      ],
+      columnas: [
+        { titulo: 'Fecha', valor: (m) => fecha.format(new Date(m.created_at)) },
+        { titulo: 'SKU', valor: (m) => m.sku },
+        { titulo: 'Producto', valor: (m) => m.producto },
+        { titulo: 'Tipo', valor: (m) => (m.tipo === 'entrada' ? 'Entrada' : 'Salida') },
+        { titulo: 'Cantidad', valor: (m) => m.cantidad, alinear: 'right' },
+        { titulo: 'Usuario', valor: (m) => m.usuario },
+      ],
+      filas,
+    };
+  }
+
+  exportarCsv(): void {
+    this.exportar.csv(this.informe());
+  }
+
+  async exportarPdf(): Promise<void> {
+    await this.exportar.pdf(this.informe());
   }
 }

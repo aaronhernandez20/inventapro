@@ -15,6 +15,14 @@
         <h1>Movimientos</h1>
         <p class="subtitle">Registra entradas y salidas de almacén. El stock se actualiza automáticamente.</p>
       </div>
+      <div class="actions">
+        <ion-button fill="outline" (click)="exportarCsv()" [disabled]="cargando()">
+          <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon> CSV
+        </ion-button>
+        <ion-button fill="outline" (click)="exportarPdf()" [disabled]="cargando()">
+          <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> PDF
+        </ion-button>
+      </div>
     </header>
 
     <div class="grid-main grid-main--reverse">
