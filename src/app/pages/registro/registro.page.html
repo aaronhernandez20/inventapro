@@ -1,0 +1,114 @@
+<ion-content>
+  <div class="auth-layout">
+    <section class="auth-hero" aria-label="Presentación de InventaPro">
+      <app-logo tagline="Gestión de inventario" />
+      <div>
+        <h2>Crea tu cuenta en menos de un minuto.</h2>
+        <p>Con tu cuenta podrás consultar el inventario y registrar entradas y salidas de stock. Un administrador puede ampliar tus permisos.</p>
+        <ul>
+          <li><ion-icon name="cube-outline" aria-hidden="true"></ion-icon> Consulta el catálogo y el stock disponible</li>
+          <li><ion-icon name="pulse-outline" aria-hidden="true"></ion-icon> Registra movimientos desde el móvil</li>
+          <li><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon> Tus datos protegidos con Supabase Auth</li>
+        </ul>
+      </div>
+      <p class="hero-foot">© 2026 InventaPro · Proyecto DAM2</p>
+    </section>
+
+    <main class="auth-panel" id="contenido">
+      <div class="auth-card">
+        <app-logo class="auth-brand-mobile" tagline="Gestión de inventario" />
+        <h1>Crear cuenta</h1>
+        <p class="auth-sub">Rellena tus datos. Las cuentas nuevas tienen rol de usuario estándar.</p>
+
+        <form [formGroup]="form" (ngSubmit)="registrar()" novalidate>
+          <ion-input
+            label="Nombre y apellidos"
+            labelPlacement="floating"
+            fill="outline"
+            autocomplete="name"
+            formControlName="nombre"
+            [counter]="true"
+            [maxlength]="60"
+            errorText="Escribe al menos 3 caracteres">
+          </ion-input>
+
+          <ion-input
+            label="Email"
+            labelPlacement="floating"
+            fill="outline"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            formControlName="email"
+            [errorText]="errorEmail()">
+          </ion-input>
+          <!-- Resultado de la validación asíncrona del email -->
+          <div aria-live="polite">
+            @switch (estadoEmail()) {
+              @case ('comprobando') {
+                <ion-note class="field-hint"><ion-icon name="sync-outline" aria-hidden="true"></ion-icon> Comprobando si el email está libre…</ion-note>
+              }
+              @case ('disponible') {
+                <ion-note class="field-hint ok"><ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon> Email disponible</ion-note>
+              }
+            }
+          </div>
+
+          <ion-input
+            label="Contraseña"
+            labelPlacement="floating"
+            fill="outline"
+            type="password"
+            autocomplete="new-password"
+            formControlName="password"
+            helperText="Mínimo 8 caracteres, con letras y números"
+            errorText="Mínimo 8 caracteres, con letras y números">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+          @if (nivel() > 0) {
+            <div class="strength" [attr.data-nivel]="nivel()" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <ion-note class="field-hint" aria-live="polite">Seguridad: {{ textoNivel() }}</ion-note>
+          }
+
+          <ion-input
+            label="Repite la contraseña"
+            labelPlacement="floating"
+            fill="outline"
+            type="password"
+            autocomplete="new-password"
+            formControlName="confirmar"
+            errorText="Repite la contraseña">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+          @if (noCoinciden()) {
+            <ion-note class="field-hint error" role="alert">
+              <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon> Las contraseñas no coinciden
+            </ion-note>
+          }
+
+          <ion-checkbox formControlName="acepto" labelPlacement="end" justify="start">
+            Acepto que mis datos se usen solo para gestionar mi cuenta
+          </ion-checkbox>
+
+          @if (error()) {
+            <ion-note class="field-hint error" role="alert">
+              <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon> {{ error() }}
+            </ion-note>
+          }
+
+          <ion-button type="submit" expand="block" size="large" [disabled]="enviando() || form.invalid || form.pending">
+            @if (enviando()) {
+              <ion-spinner name="crescent" aria-label="Creando cuenta"></ion-spinner>
+            } @else {
+              Crear cuenta
+            }
+          </ion-button>
+        </form>
+
+        <p class="auth-alt">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+      </div>
+    </main>
+  </div>
+</ion-content>

@@ -1,23 +1,35 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>InventaPro</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="auth-layout">
+    <!-- Panel de marca (escritorio) -->
+    <section class="auth-hero" aria-label="Presentación de InventaPro">
+      <app-logo tagline="Gestión de inventario" />
+      <div>
+        <h2>Tu almacén, bajo control y en tiempo real.</h2>
+        <p>Productos, movimientos de stock, alertas y cuadros de mando en una sola aplicación, en el móvil o en el ordenador.</p>
+        <ul>
+          <li><ion-icon name="cube-outline" aria-hidden="true"></ion-icon> Catálogo con imágenes y control de stock mínimo</li>
+          <li><ion-icon name="pulse-outline" aria-hidden="true"></ion-icon> Actividad y alertas al instante</li>
+          <li><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon> Informes en PDF y CSV</li>
+          <li><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon> Acceso por roles: administrador y usuario</li>
+        </ul>
+      </div>
+      <p class="hero-foot">© 2026 InventaPro · Proyecto DAM2</p>
+    </section>
 
-<ion-content class="ion-padding">
-  <main class="login">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title><h1>Iniciar sesión</h1></ion-card-title>
-      </ion-card-header>
+    <!-- Formulario -->
+    <main class="auth-panel" id="contenido">
+      <div class="auth-card">
+        <app-logo class="auth-brand-mobile" tagline="Gestión de inventario" />
+        <h1>Bienvenido de nuevo</h1>
+        <p class="auth-sub">Inicia sesión para gestionar tu inventario.</p>
 
-      <ion-card-content>
         <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
           <ion-input
             label="Email"
-            labelPlacement="stacked"
+            labelPlacement="floating"
             fill="outline"
             type="email"
+            inputmode="email"
             autocomplete="email"
             formControlName="email"
             errorText="Introduce un email válido">
@@ -25,7 +37,7 @@
 
           <ion-input
             label="Contraseña"
-            labelPlacement="stacked"
+            labelPlacement="floating"
             fill="outline"
             type="password"
             autocomplete="current-password"
@@ -35,12 +47,12 @@
           </ion-input>
 
           @if (error()) {
-            <ion-text color="danger">
-              <p role="alert">{{ error() }}</p>
-            </ion-text>
+            <ion-note class="field-hint error" role="alert">
+              <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon> {{ error() }}
+            </ion-note>
           }
 
-          <ion-button type="submit" expand="block" [disabled]="cargando()">
+          <ion-button type="submit" expand="block" size="large" [disabled]="cargando()">
             @if (cargando()) {
               <ion-spinner name="crescent" aria-label="Entrando"></ion-spinner>
             } @else {
@@ -48,7 +60,9 @@
             }
           </ion-button>
         </form>
-      </ion-card-content>
-    </ion-card>
-  </main>
+
+        <p class="auth-alt">¿No tienes cuenta? <a routerLink="/registro">Crear una cuenta</a></p>
+      </div>
+    </main>
+  </div>
 </ion-content>

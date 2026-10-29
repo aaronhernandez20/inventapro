@@ -1,0 +1,137 @@
+// =============================================================================
+// THEME / _SHELL.SCSS - menú lateral y estructura general de la app
+// =============================================================================
+@use 'theme/tokens' as t;
+
+ion-split-pane {
+  --side-width: 272px;
+  --side-max-width: 272px;
+  --border: none;
+}
+
+ion-menu.app-menu {
+  --background: #1e1b4b;
+
+  ion-content {
+    --background: linear-gradient(180deg, #1e1b4b 0%, #262262 60%, #312e81 100%);
+    --color: #e0e7ff;
+  }
+
+  ion-footer ion-toolbar {
+    --background: #312e81;
+    --border-width: 0;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.4rem 1.25rem 1rem;
+  color: #fff;
+  text-decoration: none;
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    box-shadow: 0 8px 18px -6px rgba(129, 140, 248, 0.7);
+  }
+
+  .brand-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .brand-tag {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #c7d2fe;
+    letter-spacing: 0;
+  }
+}
+
+.menu-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 1rem 1rem;
+  padding: 0.8rem;
+  border-radius: t.$radius;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .avatar {
+    background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+    color: #1e1b4b;
+  }
+
+  .menu-user-name {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .menu-user-role {
+    margin: 0.1rem 0 0;
+    font-size: 0.78rem;
+    color: #c7d2fe;
+  }
+}
+
+.menu-section {
+  margin: 1rem 1.5rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #a5b4fc;
+}
+
+.menu-list {
+  padding: 0 0.75rem;
+  background: transparent;
+
+  ion-item {
+    --background: transparent;
+    --background-hover: rgba(255, 255, 255, 0.08);
+    --background-hover-opacity: 1;
+    --color: #e0e7ff;
+    --border-radius: 12px;
+    --min-height: 46px;
+    --padding-start: 0.85rem;
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+
+    ion-icon {
+      color: #a5b4fc;
+      margin-inline-end: 0.85rem;
+      font-size: 1.25rem;
+    }
+
+    &.activo {
+      --background: rgba(255, 255, 255, 0.14);
+      --color: #ffffff;
+      font-weight: 700;
+
+      ion-icon {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.menu-logout {
+  --color: #fecaca;
+  width: 100%;
+}

@@ -1,5 +1,5 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <main>
+<ion-content>
+  <main class="page" id="contenido">
     <h1>Hola, {{ auth.perfil()?.nombre ?? auth.user()?.email }}</h1>
     <p>
       Has entrado como
