@@ -1,40 +1,63 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import {
-  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonGrid, IonRow, IonCol,
-  IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonSpinner, IonButton, IonBadge
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSpinner, IonButton, IonIcon
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  cubeOutline, layersOutline, walletOutline, warningOutline, arrowForwardOutline,
+  addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline
+} from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { ProductosService } from '../../services/productos.service';
 import { Producto } from '../../models/models';
+import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
 
-/** Página de bienvenida con un resumen rápido del inventario. */
+/** Página de inicio: saludo, indicadores del inventario y productos que necesitan reposición. */
 @Component({
   selector: 'app-inicio',
   templateUrl: 'inicio.page.html',
-  styleUrls: ['inicio.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CurrencyPipe, RouterLink, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent,
-    IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle,
-    IonSpinner, IonButton, IonBadge
+    RouterLink, StatCardComponent,
+    IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSpinner, IonButton, IonIcon
   ],
 })
 export class InicioPage {
   protected auth = inject(AuthService);
   private productosService = inject(ProductosService);
+  private router = inject(Router);
 
   readonly cargando = signal(true);
   readonly productos = signal<Producto[]>([]);
 
-  /** Datos resumidos calculados a partir de los productos. */
+  private readonly euros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  private readonly num = new Intl.NumberFormat('es-ES');
+
+  /** Indicadores calculados a partir de los productos (signals computadas). */
   readonly totalProductos = computed(() => this.productos().length);
-  readonly stockBajo = computed(() => this.productos().filter((p) => p.stock <= p.stock_minimo).length);
+  readonly unidades = computed(() => this.num.format(this.productos().reduce((t, p) => t + p.stock, 0)));
   readonly valorInventario = computed(() =>
-    this.productos().reduce((total, p) => total + p.precio * p.stock, 0)
+    this.euros.format(this.productos().reduce((total, p) => total + p.precio * p.stock, 0))
+  );
+  readonly bajoMinimo = computed(() =>
+    this.productos()
+      .filter((p) => p.stock <= p.stock_minimo)
+      .sort((a, b) => a.stock / Math.max(1, a.stock_minimo) - b.stock / Math.max(1, b.stock_minimo))
   );
 
+  /** Saludo según la hora del día. */
+  readonly saludo = (() => {
+    const h = new Date().getHours();
+    return h < 14 ? 'Buenos días' : h < 21 ? 'Buenas tardes' : 'Buenas noches';
+  })();
+  readonly hoy = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+
   constructor() {
+    addIcons({
+      cubeOutline, layersOutline, walletOutline, warningOutline, arrowForwardOutline,
+      addCircleOutline, pieChartOutline, helpCircleOutline, checkmarkDoneOutline,
+    });
     this.cargar();
   }
 
@@ -45,5 +68,14 @@ export class InicioPage {
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  /** Porcentaje de stock respecto al mínimo (para la barra de progreso). */
+  porcentaje(p: Producto): number {
+    return Math.min(100, Math.round((p.stock / Math.max(1, p.stock_minimo)) * 100));
+  }
+
+  irA(url: string): void {
+    this.router.navigateByUrl(url);
   }
 }

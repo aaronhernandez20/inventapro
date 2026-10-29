@@ -8,33 +8,68 @@
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
-    <h1>Inventario</h1>
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    @if (cargando()) {
-      <div class="centro"><ion-spinner aria-label="Cargando productos"></ion-spinner></div>
-    } @else if (error()) {
-      <ion-text color="danger"><p role="alert">{{ error() }}</p></ion-text>
-    } @else {
-      <ion-list>
-        @for (p of productos(); track p.id) {
-          <ion-item>
-            <ion-label>
-              <h2>{{ p.nombre }}</h2>
-              <p>{{ p.sku }} · {{ p.categorias?.nombre ?? 'Sin categoría' }} · {{ p.precio | currency: 'EUR' }}</p>
-            </ion-label>
-            <div slot="end" class="stock">
-              <ion-note>Stock</ion-note>
-              <ion-badge [color]="p.stock <= p.stock_minimo ? 'danger' : 'success'"
-                         [attr.aria-label]="'Stock ' + p.stock + (p.stock <= p.stock_minimo ? ', bajo mínimo' : '')">
-                {{ p.stock }}
-              </ion-badge>
-            </div>
-          </ion-item>
-        } @empty {
-          <ion-item><ion-label>No hay productos.</ion-label></ion-item>
+  <main class="page" id="contenido">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">Inventario</span>
+        <h1>Productos</h1>
+        <p class="subtitle">{{ productos().length }} productos en catálogo · {{ numBajo() }} por debajo del stock mínimo</p>
+      </div>
+      <div class="actions">
+        <ion-button fill="outline" (click)="cargar()" aria-label="Recargar productos">
+          <ion-icon slot="icon-only" name="refresh-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+        @if (auth.isAdmin()) {
+          <ion-button routerLink="/productos/nuevo">
+            <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+            Nuevo producto
+          </ion-button>
         }
-      </ion-list>
+      </div>
+    </header>
+
+    @if (error()) {
+      <div class="surface empty-state" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <h3>{{ error() }}</h3>
+        <ion-button fill="outline" (click)="cargar()">Reintentar</ion-button>
+      </div>
+    } @else {
+      <section class="surface">
+        <app-data-table
+          titulo="Listado de productos del inventario"
+          placeholder="Buscar por nombre, SKU, categoría…"
+          textoVacio="No hay productos con estos filtros."
+          [filas]="filtrados()"
+          [columnas]="columnas"
+          [cargando]="cargando()"
+          [acciones]="auth.isAdmin()"
+          (editar)="editar($event)"
+          (eliminar)="eliminar($event)">
+          <div dt-filtros class="filtros">
+            <ion-segment class="app-segment" [value]="vista()" (ionChange)="vista.set($any($event.detail.value))" aria-label="Filtrar por stock">
+              <ion-segment-button value="todos"><ion-label>Todos</ion-label></ion-segment-button>
+              <ion-segment-button value="bajo"><ion-label>Stock bajo ({{ numBajo() }})</ion-label></ion-segment-button>
+            </ion-segment>
+            <ion-select
+              aria-label="Filtrar por categoría"
+              interface="popover"
+              fill="outline"
+              placeholder="Todas las categorías"
+              [value]="categoria()"
+              (ionChange)="categoria.set($event.detail.value)">
+              <ion-select-option [value]="null">Todas las categorías</ion-select-option>
+              @for (c of categorias(); track c.id) {
+                <ion-select-option [value]="c.id">{{ c.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+        </app-data-table>
+      </section>
     }
   </main>
 </ion-content>
