@@ -1,15 +1,17 @@
 {
   "name": "inventapro",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Aarón Hernández Moreno",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run test:ci && ng build && npm run docs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "docs": "compodoc -p tsconfig.doc.json -d www/docs -n \"InventaPro · Documentación técnica\" --language es-ES --hideGenerator --disableCoverage",
+    "docs:serve": "compodoc -p tsconfig.doc.json -d documentation -s --language es-ES",
+    "test:ci": "ng test --watch=false"
   },
   "private": true,
   "dependencies": {
@@ -51,5 +53,5 @@
     "typescript-eslint": "^8.61.0",
     "vitest": "~5.0.5"
   },
-  "description": "An Ionic project"
+  "description": "InventaPro: gestión de inventario con Ionic + Angular, Supabase y Firestore"
 }

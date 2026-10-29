@@ -257,3 +257,71 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+// Ayuda
+.help-intro {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  > ion-icon {
+    flex-shrink: 0;
+    font-size: 1.75rem;
+    color: var(--ion-color-primary);
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0.25rem 0;
+    color: t.$muted;
+  }
+}
+
+.help-list {
+  display: grid;
+  gap: 0.75rem;
+
+  ion-accordion {
+    @include t.surface(0);
+    overflow: hidden;
+  }
+
+  ion-item {
+    --background: #fff;
+    --padding-start: 1rem;
+
+    ion-icon {
+      color: var(--ion-color-primary);
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+  }
+}
+
+.help-content {
+  padding: 0 1.25rem 1rem 3.5rem;
+
+  li {
+    margin-bottom: 0.5rem;
+    line-height: 1.55;
+    color: #334155;
+  }
+}
+
+.help-foot {
+  margin-top: 1.5rem;
+  color: t.$muted;
+  text-align: center;
+}
+
+// Botón de ayuda contextual en las cabeceras
+.btn-help {
+  --color: #475569;
+}

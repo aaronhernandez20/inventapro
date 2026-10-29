@@ -4,12 +4,17 @@
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Movimientos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'movimientos' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
-    <header class="page-header">
+  <div class="page" id="contenido">
+    <div class="page-header">
       <div>
         <span class="eyebrow">Stock</span>
         <h1>Movimientos</h1>
@@ -23,7 +28,7 @@
           <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> PDF
         </ion-button>
       </div>
-    </header>
+    </div>
 
     <div class="grid-main grid-main--reverse">
       <!-- Historial -->
@@ -100,5 +105,5 @@
         </section>
       </div>
     </div>
-  </main>
+  </div>
 </ion-content>

@@ -56,6 +56,11 @@ ion-segment.app-segment {
   --background: #e9edf5;
   border-radius: t.$radius-sm;
   width: auto;
+
+  ion-segment-button {
+    --color: #475569;
+    --color-checked: #3730a3;
+  }
 }
 
 // Etiquetas de estado con fondo suave (texto oscuro = buen contraste)

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
-  AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent
+  AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { peopleOutline, shieldCheckmarkOutline, personOutline } from 'ionicons/icons';
@@ -16,7 +17,8 @@ import { StatCardComponent } from '../../shared/components/stat-card/stat-card.c
   selector: 'app-usuarios',
   templateUrl: 'usuarios.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DataTableComponent, StatCardComponent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent],
+  imports: [
+    RouterLink, IonButton, IonIcon,DataTableComponent, StatCardComponent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent],
 })
 export class UsuariosPage {
   private usuariosService = inject(UsuariosService);

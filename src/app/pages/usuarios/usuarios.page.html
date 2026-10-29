@@ -4,18 +4,23 @@
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'usuarios' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <main class="page" id="contenido">
-    <header class="page-header">
+  <div class="page" id="contenido">
+    <div class="page-header">
       <div>
         <span class="eyebrow">Administración</span>
         <h1>Usuarios y roles</h1>
         <p class="subtitle">Las cuentas creadas desde "Crear cuenta" aparecen aquí con rol de usuario estándar.</p>
       </div>
-    </header>
+    </div>
 
     <section class="grid-stats" aria-label="Resumen de usuarios">
       <app-stat-card etiqueta="Usuarios" [valor]="usuarios().length" icono="people-outline" tono="indigo" detalle="cuentas registradas" />
@@ -36,5 +41,5 @@
         [eliminable]="false"
         (editar)="cambiarRol($event)" />
     </section>
-  </main>
+  </div>
 </ion-content>

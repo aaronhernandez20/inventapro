@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
@@ -30,6 +31,7 @@ export type FilaMovimiento = Movimiento & { producto: string; sku: string; image
   templateUrl: 'movimientos.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     ReactiveFormsModule, DataTableComponent, ActivityFeedComponent,
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSelect, IonSelectOption,
     IonSegment, IonSegmentButton, IonLabel, IonInput, IonButton, IonIcon, IonSpinner
