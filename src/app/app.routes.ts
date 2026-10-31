@@ -3,7 +3,10 @@ import { authGuard, adminGuard, invitadoGuard } from './guards/auth.guards';
 
 /**
  * Rutas de la app. Todas usan carga diferida (lazy loading con loadComponent)
- * y están protegidas por guards según el rol.
+ * y están protegidas por guards según el rol:
+ *  - canActivate + authGuard: pantallas de cualquier usuario con sesión.
+ *  - canMatch + adminGuard: pantallas solo de Administrador.
+ *  - canActivate + invitadoGuard: login y registro (solo sin sesión).
  */
 export const routes: Routes = [
   {
@@ -28,12 +31,12 @@ export const routes: Routes = [
   },
   {
     path: 'productos/nuevo',
-    canActivate: [adminGuard], // solo Administrador
+    canMatch: [adminGuard], // solo Administrador (canMatch: ni siquiera se descarga)
     loadComponent: () => import('./pages/producto-form/producto-form.page').then((m) => m.ProductoFormPage),
   },
   {
     path: 'productos/:id/editar',
-    canActivate: [adminGuard], // solo Administrador
+    canMatch: [adminGuard], // solo Administrador (canMatch: ni siquiera se descarga)
     loadComponent: () => import('./pages/producto-form/producto-form.page').then((m) => m.ProductoFormPage),
   },
   {
@@ -43,12 +46,12 @@ export const routes: Routes = [
   },
   {
     path: 'usuarios',
-    canActivate: [adminGuard], // solo Administrador
+    canMatch: [adminGuard], // solo Administrador (canMatch: ni siquiera se descarga)
     loadComponent: () => import('./pages/usuarios/usuarios.page').then((m) => m.UsuariosPage),
   },
   {
     path: 'dashboard',
-    canActivate: [adminGuard], // solo Administrador
+    canMatch: [adminGuard], // solo Administrador (canMatch: ni siquiera se descarga)
     loadComponent: () => import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
   },
   {

@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { User } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
-import { Perfil } from '../models/models';
+import { Perfil, Rol } from '../models/models';
 
 /** Resultado del registro de una cuenta nueva. */
 export interface ResultadoRegistro {
@@ -27,8 +27,16 @@ export class AuthService {
   readonly perfil = this._perfil.asReadonly();
   /** `true` si hay sesión iniciada. */
   readonly isLoggedIn = computed(() => this._user() !== null);
+  /** Rol del usuario autenticado (`null` sin sesión). Lo lee de la tabla `perfiles`, no del JWT. */
+  readonly rol = computed<Rol | null>(() => this._perfil()?.rol ?? null);
   /** `true` si el usuario es Administrador. */
-  readonly isAdmin = computed(() => this._perfil()?.rol === 'admin');
+  readonly isAdmin = computed(() => this.rol() === 'admin');
+
+  /** Comprueba si el usuario tiene alguno de los roles indicados (lo usan guards y vistas). */
+  tieneRol(...roles: Rol[]): boolean {
+    const rol = this.rol();
+    return rol !== null && roles.includes(rol);
+  }
   /** Nombre a mostrar (nombre del perfil o, si no tiene, el email). */
   readonly nombreVisible = computed(() => this._perfil()?.nombre ?? this._user()?.email ?? '');
   /** Iniciales para el avatar (ej. "Aarón Hernández" -> "AH"). */
