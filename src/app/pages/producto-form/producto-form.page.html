@@ -1,0 +1,99 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/productos" text="" aria-label="Volver a productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page page-narrow" id="contenido">
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Inventario</span>
+        <h1>{{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}</h1>
+        <p class="subtitle">
+          {{ esEdicion() ? 'Modifica los datos del producto. El stock se actualiza registrando movimientos.' : 'Añade un artículo al catálogo con su imagen y su stock inicial.' }}
+        </p>
+      </div>
+    </div>
+
+    @if (cargando()) {
+      <div class="center"><ion-spinner aria-label="Cargando formulario"></ion-spinner></div>
+    } @else {
+      <form class="surface" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <app-image-picker [url]="original()?.imagen_url" (archivo)="imagenElegida($event)" />
+
+        <h2 class="form-section">Datos del producto</h2>
+        <div class="form-grid">
+          <div>
+            <ion-input
+              label="SKU (código)"
+              labelPlacement="floating"
+              fill="outline"
+              formControlName="sku"
+              placeholder="INF-004"
+              autocapitalize="characters"
+              [errorText]="errorSku()">
+            </ion-input>
+            <div aria-live="polite">
+              @switch (estadoSku()) {
+                @case ('comprobando') {
+                  <ion-note class="field-hint field-hint--below"><ion-icon name="sync-outline" aria-hidden="true"></ion-icon> Comprobando SKU…</ion-note>
+                }
+                @case ('disponible') {
+                  <ion-note class="field-hint field-hint--below ok"><ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon> SKU disponible</ion-note>
+                }
+              }
+            </div>
+          </div>
+
+          <ion-input label="Nombre" labelPlacement="floating" fill="outline" formControlName="nombre"
+            errorText="Entre 3 y 80 caracteres"></ion-input>
+
+          <ion-select label="Categoría" labelPlacement="floating" fill="outline" formControlName="categoria_id"
+            interface="popover" errorText="Elige una categoría">
+            @for (c of categorias(); track c.id) {
+              <ion-select-option [value]="c.id">{{ c.nombre }}</ion-select-option>
+            }
+          </ion-select>
+
+          <ion-select label="Proveedor" labelPlacement="floating" fill="outline" formControlName="proveedor_id"
+            interface="popover" errorText="Elige un proveedor">
+            @for (p of proveedores(); track p.id) {
+              <ion-select-option [value]="p.id">{{ p.nombre }}</ion-select-option>
+            }
+          </ion-select>
+
+          <ion-textarea class="full" label="Descripción (opcional)" labelPlacement="floating" fill="outline"
+            formControlName="descripcion" [autoGrow]="true" [counter]="true" [maxlength]="300"></ion-textarea>
+        </div>
+
+        <h2 class="form-section">Precio y stock</h2>
+        <div class="form-grid form-grid--3">
+          <ion-input label="Precio (€)" labelPlacement="floating" fill="outline" type="number" inputmode="decimal"
+            min="0" step="0.01" formControlName="precio" errorText="Precio no válido"></ion-input>
+          <ion-input label="Stock inicial" labelPlacement="floating" fill="outline" type="number" inputmode="numeric"
+            min="0" formControlName="stock" errorText="Stock no válido"
+            [helperText]="esEdicion() ? 'Se modifica con entradas y salidas' : ''"></ion-input>
+          <ion-input label="Stock mínimo" labelPlacement="floating" fill="outline" type="number" inputmode="numeric"
+            min="0" formControlName="stock_minimo" errorText="Valor no válido"
+            helperText="Por debajo se genera una alerta"></ion-input>
+        </div>
+
+        <div class="form-actions">
+          <ion-button fill="clear" color="medium" routerLink="/productos">Cancelar</ion-button>
+          <ion-button type="submit" [disabled]="guardando() || form.pending">
+            @if (guardando()) {
+              <ion-spinner name="crescent" aria-label="Guardando"></ion-spinner>
+            } @else {
+              <ion-icon slot="start" name="save-outline" aria-hidden="true"></ion-icon>
+              {{ esEdicion() ? 'Guardar cambios' : 'Crear producto' }}
+            }
+          </ion-button>
+        </div>
+      </form>
+    }
+  </div>
+</ion-content>

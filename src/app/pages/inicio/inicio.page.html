@@ -1,59 +1,117 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'inicio' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <main>
-    <h1>Hola, {{ auth.perfil()?.nombre ?? auth.user()?.email }}</h1>
-    <p>
-      Has entrado como
-      <ion-badge [color]="auth.isAdmin() ? 'tertiary' : 'medium'">
-        {{ auth.isAdmin() ? 'Administrador' : 'Usuario estándar' }}
-      </ion-badge>
-    </p>
+<ion-content>
+  <div class="page" id="contenido">
+    <!-- Bienvenida -->
+    <section class="hero-banner">
+      <div>
+        <p class="hero-date">{{ hoy }}</p>
+        <h1>{{ saludo }}, {{ auth.nombreVisible() }}</h1>
+        <p>Este es el estado de tu inventario hoy.
+          @if (auth.isAdmin()) { Tienes acceso completo como <strong>administrador</strong>. }
+          @else { Puedes consultar el stock y registrar movimientos. }
+        </p>
+      </div>
+      <div class="hero-actions">
+        <ion-button color="light" routerLink="/productos">
+          <ion-icon slot="start" name="cube-outline" aria-hidden="true"></ion-icon> Ver inventario
+        </ion-button>
+        @if (auth.isAdmin()) {
+          <ion-button fill="outline" class="btn-on-dark" routerLink="/productos/nuevo">
+            <ion-icon slot="start" name="add-circle-outline" aria-hidden="true"></ion-icon> Nuevo producto
+          </ion-button>
+        }
+      </div>
+    </section>
 
     @if (cargando()) {
-      <div class="centro"><ion-spinner aria-label="Cargando resumen"></ion-spinner></div>
+      <div class="center"><ion-spinner aria-label="Cargando resumen"></ion-spinner></div>
     } @else {
-      <!-- Grid responsive: 1 columna en móvil, 3 en tablet/escritorio -->
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12" size-md="4">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-subtitle>Productos</ion-card-subtitle>
-                <ion-card-title>{{ totalProductos() }}</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="12" size-md="4">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-subtitle>Con stock bajo</ion-card-subtitle>
-                <ion-card-title class="aviso">{{ stockBajo() }}</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="12" size-md="4">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-subtitle>Valor del inventario</ion-card-subtitle>
-                <ion-card-title>{{ valorInventario() | currency: 'EUR' }}</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <!-- Indicadores (componente reutilizable app-stat-card) -->
+      <section class="grid-stats" aria-label="Indicadores del inventario">
+        <app-stat-card etiqueta="Productos" [valor]="totalProductos()" icono="cube-outline" tono="indigo" detalle="en catálogo"
+          [interactiva]="true" (seleccionar)="irA('/productos')" />
+        <app-stat-card etiqueta="Unidades en stock" [valor]="unidades()" icono="layers-outline" tono="teal" detalle="sumando todos los productos" />
+        <app-stat-card etiqueta="Valor del inventario" [valor]="valorInventario()" icono="wallet-outline" tono="violet" detalle="precio × stock" />
+        <app-stat-card etiqueta="Stock bajo" [valor]="bajoMinimo().length" icono="warning-outline" tono="amber" detalle="necesitan reposición"
+          [interactiva]="true" (seleccionar)="irA('/productos')" />
+      </section>
 
-      <ion-button routerLink="/productos">Ver productos</ion-button>
-      @if (auth.isAdmin()) {
-        <ion-button routerLink="/dashboard" fill="outline">Cuadro de mando</ion-button>
-      }
+      <div class="grid-main">
+        <!-- Productos a reponer -->
+        <section class="surface" aria-labelledby="titulo-reponer">
+          <div class="surface-head">
+            <h2 id="titulo-reponer">Productos a reponer</h2>
+            <ion-button fill="clear" size="small" routerLink="/productos">
+              Ver todos <ion-icon slot="end" name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+            </ion-button>
+          </div>
+          @if (bajoMinimo().length === 0) {
+            <div class="empty-state">
+              <ion-icon name="checkmark-done-outline" aria-hidden="true"></ion-icon>
+              <h3>Todo en orden</h3>
+              <p>Ningún producto está por debajo de su stock mínimo.</p>
+            </div>
+          } @else {
+            <ul class="stock-list">
+              @for (p of bajoMinimo(); track p.id) {
+                <li>
+                  @if (p.imagen_url) {
+                    <img class="thumb" [src]="p.imagen_url" [alt]="p.nombre" width="44" height="44" loading="lazy" />
+                  } @else {
+                    <span class="thumb thumb-vacia" aria-hidden="true"></span>
+                  }
+                  <div class="stock-info">
+                    <p class="stock-name">{{ p.nombre }}</p>
+                    <div class="stock-bar" role="progressbar" [attr.aria-valuenow]="porcentaje(p)" aria-valuemin="0" aria-valuemax="100"
+                      [attr.aria-label]="'Stock de ' + p.nombre + ' respecto al mínimo'">
+                      <span [style.width.%]="porcentaje(p)"></span>
+                    </div>
+                  </div>
+                  <span class="pill" [class.danger]="p.stock === 0" [class.warning]="p.stock > 0">{{ p.stock }} / {{ p.stock_minimo }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <div class="stack">
+        <!-- Accesos rápidos -->
+        <section class="surface" aria-labelledby="titulo-accesos">
+          <h2 id="titulo-accesos" class="surface-title">Accesos rápidos</h2>
+          <nav class="quick-links" aria-label="Accesos rápidos">
+            <a routerLink="/movimientos"><ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon><span>Registrar entrada o salida</span></a>
+            <a routerLink="/productos"><ion-icon name="cube-outline" aria-hidden="true"></ion-icon><span>Consultar inventario</span></a>
+            @if (auth.isAdmin()) {
+              <a routerLink="/productos/nuevo"><ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon><span>Dar de alta un producto</span></a>
+              <a routerLink="/dashboard"><ion-icon name="pie-chart-outline" aria-hidden="true"></ion-icon><span>Cuadro de mando</span></a>
+            }
+            <a routerLink="/ayuda"><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon><span>Manual de usuario</span></a>
+          </nav>
+        </section>
+
+        <!-- Actividad en tiempo real (Firestore) -->
+        <section class="surface" aria-labelledby="titulo-actividad">
+          <div class="surface-head">
+            <h2 id="titulo-actividad">Actividad reciente</h2>
+            @if (actividad.disponible) { <span class="live-dot">En directo</span> }
+          </div>
+          <app-activity-feed [eventos]="eventos() ?? []" [cargando]="eventos() === null" [disponible]="actividad.disponible" />
+        </section>
+        </div>
+      </div>
     }
-  </main>
+  </div>
 </ion-content>

@@ -1,0 +1,379 @@
+// =============================================================================
+// THEME / _WIDGETS.SCSS - estilos de los componentes propios
+// (app-data-table, app-stat-card, app-image-picker)
+// =============================================================================
+@use 'sass:list';
+@use 'theme/tokens' as t;
+
+// ---------------- app-stat-card ----------------
+$tonos: (
+  'indigo': (#eef2ff, #4338ca),
+  'teal': (#ccfbf1, #0f766e),
+  'amber': (#fef3c7, #b45309),
+  'rose': (#ffe4e6, #be123c),
+  'violet': (#ede9fe, #6d28d9),
+);
+
+app-stat-card {
+  display: block;
+}
+
+.stat {
+  @include t.surface(1.15rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  @at-root button#{&} {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: t.$shadow;
+    }
+  }
+
+  .stat-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .stat-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: t.$muted;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: t.$ink;
+    line-height: 1.2;
+  }
+
+  .stat-detail {
+    font-size: 0.8rem;
+    color: t.$muted;
+  }
+
+  // Un color por tono generado con un bucle @each sobre el mapa
+  @each $nombre, $colores in $tonos {
+    &.stat--#{$nombre} .stat-icon {
+      background: list.nth($colores, 1);
+      color: list.nth($colores, 2);
+    }
+  }
+}
+
+// ---------------- app-data-table ----------------
+.dt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  ion-searchbar {
+    flex: 1 1 260px;
+    max-width: 420px;
+  }
+}
+
+.dt-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dt-count {
+  font-size: 0.85rem;
+  color: t.$muted;
+}
+
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+
+  th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: t.$muted;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid t.$line;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.7rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .dt-num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.dt-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.3rem;
+  margin: -0.2rem -0.3rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+
+  &:hover { color: t.$ink; }
+  ion-icon { font-size: 0.9rem; }
+}
+
+.dt-main {
+  display: block;
+  font-weight: 600;
+  color: t.$ink;
+}
+
+.dt-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: t.$muted;
+}
+
+.dt-col-img,
+.dt-cell-img {
+  width: 60px;
+}
+
+.dt-col-actions,
+.dt-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.thumb-vacia {
+  display: inline-grid;
+  place-items: center;
+  color: #94a3b8;
+}
+
+.dt-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  color: t.$muted;
+}
+
+// En móvil cada fila se convierte en una tarjeta
+@media (max-width: 767.98px) {
+  .dt-table {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.25rem 0.75rem;
+      padding: 0.85rem 0.25rem;
+      border-bottom: 1px solid t.$line;
+    }
+
+    td {
+      display: block;
+      padding: 0;
+      border: 0;
+    }
+
+    td.dt-cell-img {
+      grid-row: span 3;
+      width: auto;
+    }
+
+    td:not(.dt-cell-img):not(.dt-actions) {
+      grid-column: 2;
+    }
+
+    td.dt-actions {
+      grid-column: 3;
+      grid-row: 1 / span 3;
+    }
+
+    .dt-main {
+      display: inline;
+    }
+
+    td[data-label]:not(.dt-cell-img):not(:nth-child(2))::before {
+      content: attr(data-label) ': ';
+      font-size: 0.78rem;
+      color: t.$muted;
+    }
+  }
+}
+
+// ---------------- app-image-picker ----------------
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  border: 2px dashed #c7d2fe;
+  border-radius: t.$radius;
+  background: #f8faff;
+  transition: border-color 0.15s, background 0.15s;
+
+  &--drag {
+    border-color: t.$indigo;
+    background: #eef2ff;
+  }
+}
+
+.picker-img,
+.picker-empty {
+  width: 120px;
+  height: 120px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid t.$line;
+}
+
+.picker-empty {
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: #94a3b8;
+}
+
+.picker-info {
+  flex: 1 1 220px;
+}
+
+.picker-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.picker-help {
+  margin: 0.25rem 0 0.6rem;
+  font-size: 0.85rem;
+  color: t.$muted;
+}
+
+.picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.picker-error {
+  margin: 0.5rem 0 0;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+// ---------------- app-activity-feed ----------------
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feed-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.feed-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.feed-item--ok .feed-icon { background: #dcfce7; color: #15803d; }
+.feed-item--aviso .feed-icon { background: #fef3c7; color: #b45309; }
+
+.feed-msg {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: t.$ink;
+}
+
+.feed-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: t.$muted;
+}
+
+.live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #15803d;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  }
+}

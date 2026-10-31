@@ -1,0 +1,115 @@
+<div class="dt">
+  <div class="dt-toolbar">
+    <ion-searchbar
+      class="app-search"
+      [placeholder]="placeholder()"
+      [value]="termino()"
+      [debounce]="150"
+      (ionInput)="buscar($event.detail.value)"
+      [attr.aria-label]="'Buscar en ' + titulo()">
+    </ion-searchbar>
+    <div class="dt-extra">
+      <ng-content select="[dt-filtros]" />
+      <span class="dt-count" aria-live="polite">{{ filtradas().length }} {{ filtradas().length === 1 ? 'resultado' : 'resultados' }}</span>
+    </div>
+  </div>
+
+  <div class="dt-scroll">
+    <table class="dt-table">
+      <caption class="sr-only">{{ titulo() }}</caption>
+      <thead>
+        <tr>
+          @for (c of columnas(); track c.key) {
+            <th scope="col" [attr.aria-sort]="ordenable(c) ? ariaSort(c) : null" [class.dt-col-img]="c.tipo === 'imagen'">
+              @if (ordenable(c)) {
+                <button type="button" class="dt-sort" (click)="ordenar(c)">
+                  {{ c.label }}
+                  <ion-icon [name]="iconoOrden(c)" aria-hidden="true"></ion-icon>
+                </button>
+              } @else {
+                <span [class.sr-only]="c.tipo === 'imagen'">{{ c.label }}</span>
+              }
+            </th>
+          }
+          @if (acciones()) {
+            <th scope="col" class="dt-col-actions"><span class="sr-only">Acciones</span></th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (cargando()) {
+          @for (i of esqueletos; track i) {
+            <tr class="dt-skeleton" aria-hidden="true">
+              @for (c of columnas(); track c.key) {
+                <td><ion-skeleton-text [animated]="true"></ion-skeleton-text></td>
+              }
+              @if (acciones()) { <td></td> }
+            </tr>
+          }
+        } @else {
+          @for (fila of visibles(); track idFila(fila)) {
+            <tr>
+              @for (c of columnas(); track c.key) {
+                <td [attr.data-label]="c.label" [class.dt-cell-img]="c.tipo === 'imagen'" [class.dt-num]="c.tipo === 'moneda' || c.tipo === 'numero'">
+                  @switch (c.tipo) {
+                    @case ('imagen') {
+                      @if (imagen(fila, c); as url) {
+                        <img class="thumb" [src]="url" [alt]="c.alt ? c.alt(fila) : ''" loading="lazy" width="44" height="44" />
+                      } @else {
+                        <span class="thumb thumb-vacia" aria-hidden="true"><ion-icon name="image-outline"></ion-icon></span>
+                      }
+                    }
+                    @case ('estado') {
+                      @if (c.estado; as estado) {
+                        <span [class]="'pill ' + estado(fila).tono">{{ estado(fila).texto }}</span>
+                      }
+                    }
+                    @default {
+                      <span class="dt-main">{{ texto(fila, c) }}</span>
+                      @if (c.secundario) {
+                        <span class="dt-sub">{{ c.secundario(fila) }}</span>
+                      }
+                    }
+                  }
+                </td>
+              }
+              @if (acciones()) {
+                <td class="dt-actions">
+                  <ion-button fill="clear" size="small" (click)="editar.emit(fila)" [attr.aria-label]="textoEditar() + ' ' + texto(fila, columnas()[1] ?? columnas()[0])">
+                    <ion-icon slot="icon-only" name="create-outline" aria-hidden="true"></ion-icon>
+                  </ion-button>
+                  @if (eliminable()) {
+                    <ion-button fill="clear" size="small" color="danger" (click)="eliminar.emit(fila)" [attr.aria-label]="'Eliminar ' + texto(fila, columnas()[1] ?? columnas()[0])">
+                      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!cargando() && filtradas().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <h3>Sin resultados</h3>
+      <p>{{ termino() ? 'Prueba con otro término de búsqueda.' : textoVacio() }}</p>
+    </div>
+  }
+
+  @if (totalPaginas() > 1) {
+    <nav class="dt-pager" aria-label="Paginación">
+      <ion-button fill="outline" size="small" [disabled]="pagina() === 1" (click)="irA(pagina() - 1)" aria-label="Página anterior">
+        <ion-icon slot="icon-only" name="chevron-back-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+      <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
+      <ion-button fill="outline" size="small" [disabled]="pagina() === totalPaginas()" (click)="irA(pagina() + 1)" aria-label="Página siguiente">
+        <ion-icon slot="icon-only" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </nav>
+  }
+</div>

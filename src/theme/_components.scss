@@ -1,0 +1,111 @@
+// =============================================================================
+// THEME / _COMPONENTS.SCSS - aspecto de los componentes de Ionic
+// =============================================================================
+@use 'theme/tokens' as t;
+
+// Barra superior limpia (blanca con borde)
+ion-toolbar.app-toolbar {
+  --background: #ffffff;
+  --color: #{t.$ink};
+  --border-color: #{t.$line};
+  --border-width: 0 0 1px 0;
+  --min-height: 60px;
+
+  ion-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+}
+
+ion-button {
+  --border-radius: #{t.$radius-sm};
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+ion-card {
+  border-radius: t.$radius;
+  border: 1px solid t.$line;
+  box-shadow: t.$shadow-sm;
+  margin: 0;
+}
+
+ion-input,
+ion-select,
+ion-textarea {
+  --border-radius: #{t.$radius-sm} !important;
+  --highlight-color-focused: var(--ion-color-primary);
+}
+
+ion-input.ion-touched.ion-invalid,
+ion-select.ion-touched.ion-invalid {
+  --highlight-color-invalid: var(--ion-color-danger);
+}
+
+ion-searchbar.app-search {
+  --border-radius: #{t.$radius-sm};
+  --background: #ffffff;
+  --box-shadow: none;
+  padding: 0;
+  border: 1px solid t.$line;
+  border-radius: t.$radius-sm;
+}
+
+ion-segment.app-segment {
+  --background: #e9edf5;
+  border-radius: t.$radius-sm;
+  width: auto;
+
+  ion-segment-button {
+    --color: #475569;
+    --color-checked: #3730a3;
+  }
+}
+
+// Etiquetas de estado con fondo suave (texto oscuro = buen contraste)
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: #f1f5f9;
+  color: #334155;
+
+  &.success { background: #dcfce7; color: #14532d; }
+  &.warning { background: #fef3c7; color: #78350f; }
+  &.danger  { background: #fee2e2; color: #7f1d1d; }
+  &.info    { background: #e0e7ff; color: #312e81; }
+  &.violet  { background: #ede9fe; color: #4c1d95; }
+}
+
+// Avatar con iniciales
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  @include t.brand-gradient;
+  flex-shrink: 0;
+}
+
+// Miniatura de imagen de producto
+.thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #eef2ff;
+  border: 1px solid t.$line;
+  flex-shrink: 0;
+}

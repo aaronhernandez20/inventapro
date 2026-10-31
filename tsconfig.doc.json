@@ -1,0 +1,6 @@
+/* Configuración usada solo por Compodoc para generar la documentación técnica. */
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "src/environments/*.ts"]
+}

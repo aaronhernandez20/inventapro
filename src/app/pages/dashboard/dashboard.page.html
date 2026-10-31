@@ -1,20 +1,137 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
     </ion-buttons>
     <ion-title>Cuadro de mando</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'dashboard' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <main>
-    <h1>Cuadro de mando</h1>
-    <ion-card>
-      <ion-card-content>
-        Zona exclusiva del Administrador. Aquí irán los gráficos del inventario
-        (stock por categoría, entradas y salidas por mes) y los filtros.
-      </ion-card-content>
-    </ion-card>
-  </main>
+<ion-content>
+  <div class="page" id="contenido">
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Administración</span>
+        <h1>Cuadro de mando</h1>
+        <p class="subtitle">Datos consolidados del inventario · {{ nombreCategoria() }} · últimos {{ meses() }} meses</p>
+      </div>
+      <div class="actions">
+        <ion-button fill="outline" (click)="exportarCsv()" [disabled]="cargando() || error()">
+          <ion-icon slot="start" name="download-outline" aria-hidden="true"></ion-icon> CSV
+        </ion-button>
+        <ion-button (click)="exportarPdf()" [disabled]="cargando() || error()">
+          <ion-icon slot="start" name="document-text-outline" aria-hidden="true"></ion-icon> Informe PDF
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Filtros en tiempo real -->
+    <section class="surface filtros-dashboard" aria-label="Filtros del cuadro de mando">
+      <div class="filtros">
+        <ion-segment class="app-segment" [value]="meses()" (ionChange)="meses.set($any($event.detail.value))" aria-label="Periodo">
+          <ion-segment-button [value]="3"><ion-label>3 meses</ion-label></ion-segment-button>
+          <ion-segment-button [value]="6"><ion-label>6 meses</ion-label></ion-segment-button>
+          <ion-segment-button [value]="12"><ion-label>12 meses</ion-label></ion-segment-button>
+        </ion-segment>
+        <ion-select aria-label="Categoría" interface="popover" fill="outline" [value]="categoria()"
+          (ionChange)="categoria.set($event.detail.value)">
+          <ion-select-option [value]="null">Todas las categorías</ion-select-option>
+          @for (c of categorias(); track c.id) {
+            <ion-select-option [value]="c.id">{{ c.nombre }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+      <ion-button fill="clear" size="small" (click)="cargar()" aria-label="Actualizar datos">
+        <ion-icon slot="icon-only" name="refresh-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </section>
+
+    @if (error()) {
+      <div class="surface empty-state" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <h3>No se pudieron cargar los datos</h3>
+        <ion-button fill="outline" (click)="cargar()">Reintentar</ion-button>
+      </div>
+    } @else if (cargando()) {
+      <div class="grid-stats">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <ion-skeleton-text [animated]="true" class="skeleton-card"></ion-skeleton-text>
+        }
+      </div>
+      <div class="grid-2">
+        <ion-skeleton-text [animated]="true" class="skeleton-chart"></ion-skeleton-text>
+        <ion-skeleton-text [animated]="true" class="skeleton-chart"></ion-skeleton-text>
+      </div>
+    } @else {
+      <!-- Indicadores -->
+      <section class="grid-stats" aria-label="Indicadores">
+        <app-stat-card etiqueta="Valor del inventario" [valor]="textoValor()" icono="wallet-outline" tono="indigo" [detalle]="textoUnidades() + ' unidades'" />
+        <app-stat-card etiqueta="Entradas" [valor]="entradas()" icono="arrow-down-circle-outline" tono="teal" [detalle]="'uds en ' + meses() + ' meses'" />
+        <app-stat-card etiqueta="Salidas" [valor]="salidas()" icono="arrow-up-circle-outline" tono="violet" [detalle]="'uds en ' + meses() + ' meses'" />
+        <app-stat-card etiqueta="Bajo mínimo" [valor]="bajoMinimo()" icono="warning-outline" tono="amber" detalle="productos a reponer" />
+      </section>
+
+      <!-- Evolución (ancho completo) -->
+      <section class="surface chart-card" aria-labelledby="g-evolucion">
+        <div class="surface-head">
+          <div>
+            <h2 id="g-evolucion">Entradas y salidas por mes</h2>
+            <p class="chart-sub">Unidades movidas en el almacén</p>
+          </div>
+        </div>
+        <app-chart tipo="line" [datos]="datosArea()" [opciones]="opcionesArea" [alto]="300"
+          [descripcion]="'Gráfico de área con las entradas (' + entradas() + ' uds) y salidas (' + salidas() + ' uds) de los últimos ' + meses() + ' meses'" />
+      </section>
+
+      <div class="grid-2 mt">
+        <section class="surface chart-card" aria-labelledby="g-valor">
+          <h2 id="g-valor" class="surface-title">{{ categoria() === null ? 'Valor por categoría' : 'Valor por producto' }}</h2>
+          <div class="donut-wrap">
+            <app-chart tipo="doughnut" [datos]="datosAnillo()" [opciones]="opcionesAnillo" [alto]="300"
+              [descripcion]="'Gráfico de anillo del valor del inventario, total ' + textoValor()" />
+            <div class="donut-center" aria-hidden="true">
+              <span>Total</span>
+              <strong>{{ textoValor() }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="surface chart-card" aria-labelledby="g-radar">
+          <h2 id="g-radar" class="surface-title">Stock actual frente al mínimo</h2>
+          <app-chart tipo="radar" [datos]="datosRadar()" [opciones]="opcionesRadar" [alto]="300"
+            descripcion="Gráfico de radar que compara el stock actual con el stock mínimo" />
+        </section>
+      </div>
+
+      <!-- Ranking -->
+      <section class="surface mt" aria-labelledby="g-top">
+        <div class="surface-head">
+          <h2 id="g-top">Productos con más salidas</h2>
+          <ion-icon name="trophy-outline" class="icon-muted" aria-hidden="true"></ion-icon>
+        </div>
+        @if (topSalidas().length === 0) {
+          <p class="chart-sub">No hay salidas en este periodo.</p>
+        } @else {
+          <ol class="ranking">
+            @for (t of topSalidas(); track t.producto.id; let i = $index) {
+              <li>
+                <span class="ranking-pos">{{ i + 1 }}</span>
+                @if (t.url) { <img class="thumb" [src]="t.url" [alt]="t.producto.nombre" width="44" height="44" loading="lazy" /> }
+                <div class="ranking-info">
+                  <p class="stock-name">{{ t.producto.nombre }}</p>
+                  <div class="ranking-line"><span [style.width.%]="t.pct"></span></div>
+                </div>
+                <strong class="ranking-total">{{ t.total }} uds</strong>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+    }
+  </div>
 </ion-content>

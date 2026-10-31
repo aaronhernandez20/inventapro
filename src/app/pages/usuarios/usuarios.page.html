@@ -1,0 +1,45 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="app-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-help" routerLink="/ayuda" [queryParams]="{ seccion: 'usuarios' }" aria-label="Ayuda sobre esta pantalla">
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page" id="contenido">
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Administración</span>
+        <h1>Usuarios y roles</h1>
+        <p class="subtitle">Las cuentas creadas desde "Crear cuenta" aparecen aquí con rol de usuario estándar.</p>
+      </div>
+    </div>
+
+    <section class="grid-stats" aria-label="Resumen de usuarios">
+      <app-stat-card etiqueta="Usuarios" [valor]="usuarios().length" icono="people-outline" tono="indigo" detalle="cuentas registradas" />
+      <app-stat-card etiqueta="Administradores" [valor]="admins()" icono="shield-checkmark-outline" tono="violet" detalle="acceso completo" />
+      <app-stat-card etiqueta="Usuarios estándar" [valor]="usuarios().length - admins()" icono="person-outline" tono="teal" detalle="consulta y movimientos" />
+    </section>
+
+    <section class="surface">
+      <app-data-table
+        titulo="Listado de usuarios"
+        placeholder="Buscar por nombre o email…"
+        textoEditar="Cambiar rol de"
+        [clave]="'id'"
+        [filas]="usuarios()"
+        [columnas]="columnas"
+        [cargando]="cargando()"
+        [acciones]="true"
+        [eliminable]="false"
+        (editar)="cambiarRol($event)" />
+    </section>
+  </div>
+</ion-content>
