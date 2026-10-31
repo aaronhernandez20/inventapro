@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -26,6 +26,12 @@ export class LoginPage {
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
+  /**
+   * URL a la que volver tras iniciar sesión (`/login?returnUrl=/movimientos`).
+   * La rellena el router gracias a `withComponentInputBinding()`; la pone `authGuard`.
+   */
+  readonly returnUrl = input<string>();
+
   /** Estado de la pantalla. */
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
@@ -40,7 +46,7 @@ export class LoginPage {
     addIcons({ cubeOutline, pulseOutline, shieldCheckmarkOutline, documentTextOutline, alertCircleOutline });
   }
 
-  /** Envía el formulario: inicia sesión y entra a /inicio. */
+  /** Envía el formulario: inicia sesión y vuelve a la página pedida (o a /inicio). */
   async entrar(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -51,11 +57,17 @@ export class LoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.auth.login(email.trim(), password);
-      await this.router.navigateByUrl('/inicio', { replaceUrl: true });
+      await this.router.navigateByUrl(this.destino(), { replaceUrl: true });
     } catch {
       this.error.set('Email o contraseña incorrectos.');
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  /** Destino tras el login: la URL guardada si es interna (empieza por "/"), si no /inicio. */
+  private destino(): string {
+    const url = this.returnUrl();
+    return url && url.startsWith('/') && !url.startsWith('//') ? url : '/inicio';
   }
 }
